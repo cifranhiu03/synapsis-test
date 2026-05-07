@@ -1,0 +1,17 @@
+[package]
+name = "fleet-sim"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+fleet-proto.workspace = true
+tokio.workspace = true
+prost.workspace = true
+bytes.workspace = true
+reqwest.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+rand.workspace = true

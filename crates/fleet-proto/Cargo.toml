@@ -1,0 +1,13 @@
+[package]
+name = "fleet-proto"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+prost.workspace = true
+bytes.workspace = true
+
+[build-dependencies]
+prost-build.workspace = true

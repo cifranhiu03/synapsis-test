@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package fleet.v1;
+
+// Wire contract for the Mine Fleet Live Tracker.
+//
+// Evolution policy:
+//   * Field numbers 1-49 are stable. Numbers 50-99 are reserved for future
+//     additive fields. Never re-use a field number; deprecate instead.
+//   * All enums declare an explicit _UNSPECIFIED = 0 so an unset value on the
+//     wire is distinguishable from a meaningful one.
+//   * Proto3 makes scalar fields implicitly optional with default zero. We
+//     model genuinely-absent values (e.g., GPS during a dropout) by omitting
+//     the wrapper message rather than relying on zero sentinels.
+
+enum TruckState {
+  TRUCK_STATE_UNSPECIFIED = 0;
+  TRUCK_STATE_IDLE = 1;
+  TRUCK_STATE_LOADING_QUEUE = 2;
+  TRUCK_STATE_LOADING = 3;
+  TRUCK_STATE_HAULING = 4;
+  TRUCK_STATE_AT_CRUSHER = 5;
+  TRUCK_STATE_DUMPING = 6;
+  TRUCK_STATE_RETURNING = 7;
+
+  reserved 8 to 19;
+}
+
+enum LoadStatus {
+  LOAD_STATUS_UNSPECIFIED = 0;
+  LOAD_STATUS_EMPTY = 1;
+  LOAD_STATUS_LOADED = 2;
+}
+
+enum HealthKind {
+  HEALTH_KIND_UNSPECIFIED = 0;
+  HEALTH_KIND_OVER_REV = 1;
+  HEALTH_KIND_UNSAFE_SPEED_UNDER_LOAD = 2;
+  HEALTH_KIND_EXCESSIVE_IDLE = 3;
+  HEALTH_KIND_FUEL_ANOMALY = 4;
+  HEALTH_KIND_GPS_STALE = 5;
+  HEALTH_KIND_STUCK = 6;
+  HEALTH_KIND_LOAD_MISMATCH = 7;
+
+  reserved 8 to 19;
+}
+
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_INFO = 1;
+  SEVERITY_WARN = 2;
+  SEVERITY_FAULT = 3;
+}
+
+message GpsFix {
+  double lat = 1;
+  double lon = 2;
+  double alt_m = 3;
+  // Horizontal dilution of precision. >5 indicates a poor fix.
+  double hdop = 4;
+}
+
+message Telemetry {
+  string truck_id = 1;
+  int64 ts_unix_ms = 2;
+
+  // Absent during a GPS dropout.
+  GpsFix gps = 3;
+
+  double speed_kmh = 4;
+  uint32 rpm = 5;
+  LoadStatus load = 6;
+  // 0.0..1.0
+  float fuel_pct = 7;
+  TruckState state = 8;
+
+  reserved 50 to 99;
+}
+
+message HealthEvent {
+  string truck_id = 1;
+  int64 ts_unix_ms = 2;
+  HealthKind kind = 3;
+  Severity severity = 4;
+  string message = 5;
+
+  reserved 50 to 99;
+}
+
+// A whole-fleet snapshot used as the first frame on a new SSE connection
+// and as a resync payload after a Lagged broadcast.
+message FleetSnapshot {
+  int64 ts_unix_ms = 1;
+  repeated Telemetry trucks = 2;
+}
+
+// Single envelope used over the SSE/broadcast bus so clients can switch on
+// payload type without negotiating multiple stream formats.
+message FleetUpdate {
+  oneof payload {
+    Telemetry telemetry = 1;
+    HealthEvent health = 2;
+    FleetSnapshot snapshot = 3;
+  }
+}
