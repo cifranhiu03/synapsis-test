@@ -144,3 +144,45 @@ html, body, #root {
 .detail dt { color: var(--muted); }
 .detail dd { margin: 0; font-variant-numeric: tabular-nums; }
 .empty { color: var(--muted); }
+
+.link-btn {
+  margin-top: 12px;
+  background: #f1f5f9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.link-btn:disabled { color: var(--muted); cursor: default; }
+
+.history {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 320px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+}
+.history button {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.history-trail { display: block; margin-bottom: 8px; }
+.history .scrubber { width: 100%; margin: 8px 0; }
+.history-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 12px;
+}
+.history-stats dt { color: var(--muted); }
+.history-stats dd { margin: 0; font-variant-numeric: tabular-nums; }

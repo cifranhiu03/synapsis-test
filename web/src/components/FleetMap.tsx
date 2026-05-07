@@ -47,6 +47,7 @@ export function FleetMap() {
   const mapRef = useRef<MlMap | null>(null)
   const trucks = useFleetStore((s) => s.trucks)
   const select = useFleetStore((s) => s.selectTruck)
+  const ghost = useFleetStore((s) => s.ghost)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -83,6 +84,22 @@ export function FleetMap() {
           'circle-stroke-color': '#0f172a',
           'circle-stroke-width': 2,
           'circle-opacity': ['case', ['get', 'stale'], 0.4, 1],
+        },
+      })
+      map.addSource('ghost', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      })
+      map.addLayer({
+        id: 'ghost-circle',
+        type: 'circle',
+        source: 'ghost',
+        paint: {
+          'circle-radius': 11,
+          'circle-color': '#0f172a',
+          'circle-opacity': 0,
+          'circle-stroke-color': '#0f172a',
+          'circle-stroke-width': 2,
         },
       })
       map.addLayer({
@@ -130,6 +147,27 @@ export function FleetMap() {
     if (map.isStyleLoaded()) apply()
     else map.once('load', apply)
   }, [trucks])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const apply = () => {
+      const src = map.getSource('ghost') as maplibregl.GeoJSONSource | undefined
+      if (!src) return
+      src.setData({
+        type: 'FeatureCollection',
+        features: ghost
+          ? [{
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [ghost.lon, ghost.lat] },
+              properties: {},
+            }]
+          : [],
+      })
+    }
+    if (map.isStyleLoaded()) apply()
+    else map.once('load', apply)
+  }, [ghost])
 
   return <div ref={containerRef} className="map" />
 }

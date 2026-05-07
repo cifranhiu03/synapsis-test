@@ -4,6 +4,8 @@ export function TruckDetail() {
   const id = useFleetStore((s) => s.selectedTruckId)
   const truck = useFleetStore((s) => (id ? s.trucks[id] : undefined))
   const close = useFleetStore((s) => () => s.selectTruck(null))
+  const openHistory = useFleetStore((s) => () => s.setHistoryOpen(true))
+  const historyOpen = useFleetStore((s) => s.historyOpen)
 
   if (!id) return null
   if (!truck) {
@@ -50,6 +52,13 @@ export function TruckDetail() {
           {truck.age_ms !== undefined ? ` · ${Math.round(truck.age_ms / 100) / 10}s ago` : ''}
         </dd>
       </dl>
+      <button
+        className="link-btn"
+        onClick={openHistory}
+        disabled={historyOpen}
+      >
+        {historyOpen ? 'History open' : 'View history →'}
+      </button>
     </div>
   )
 }
