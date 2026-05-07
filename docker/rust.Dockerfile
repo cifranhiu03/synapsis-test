@@ -1,7 +1,7 @@
 # Shared multi-stage build for the Rust workspace. The target binary is
 # selected by the BIN build arg so backend and sim share the same builder
 # layer (and therefore the same dependency cache).
-FROM rust:1.83-slim-bookworm AS builder
+FROM rust:1.89-slim-bookworm AS builder
 ARG BIN
 WORKDIR /app
 

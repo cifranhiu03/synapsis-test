@@ -4,7 +4,7 @@ members = ["crates/fleet-proto", "crates/fleet-sim", "crates/fleet-backend"]
 
 [workspace.package]
 edition = "2021"
-rust-version = "1.83"
+rust-version = "1.89"
 license = "MIT"
 
 [workspace.dependencies]
