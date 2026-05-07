@@ -6,4 +6,5 @@ pub mod app;
 pub mod dto;
 pub mod error;
 pub mod handlers;
+pub mod health;
 pub mod state;

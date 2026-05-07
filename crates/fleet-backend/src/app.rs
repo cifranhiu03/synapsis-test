@@ -15,6 +15,8 @@ pub fn router(state: AppState) -> Router {
         .route("/healthz", get(healthz))
         .route("/ingest", post(handlers::ingest::ingest))
         .route("/api/fleet", get(handlers::snapshot::fleet))
+        .route("/api/stream", get(handlers::stream::stream))
+        .route("/api/trucks/{truck_id}/history", get(handlers::history::history))
         // CORS is permissive for the demo — the dashboard is served from
         // the same origin via nginx in production-style runs, but local
         // `npm run dev` hits the backend directly.
