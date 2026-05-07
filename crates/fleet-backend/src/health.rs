@@ -270,6 +270,29 @@ mod tests {
     }
 
     #[test]
+    fn load_mismatch_does_not_fire_when_load_matches_state() {
+        let mut s = vec![t(0)];
+        s[0].state = TruckState::Hauling as i32;
+        s[0].load = LoadStatus::Loaded as i32;
+        assert!(!classify(&s, 0).contains(&HealthKind::LoadMismatch));
+    }
+
+    #[test]
+    fn stuck_fires_when_no_telemetry_for_threshold() {
+        // Last sample is older than STUCK_NO_TELEMETRY_MS.
+        let s = vec![t(0)];
+        let now = STUCK_NO_TELEMETRY_MS + 1;
+        assert!(classify(&s, now).contains(&HealthKind::Stuck));
+    }
+
+    #[test]
+    fn stuck_does_not_fire_when_telemetry_is_fresh() {
+        let s = vec![t(0)];
+        // 30s ago — well under the 2-minute threshold.
+        assert!(!classify(&s, 30_000).contains(&HealthKind::Stuck));
+    }
+
+    #[test]
     fn empty_window_yields_no_alerts() {
         assert!(classify(&[], 0).is_empty());
     }
